@@ -10,38 +10,115 @@ public class MyLinkedList<E> extends MyAbstractList<E> {
 
 	@Override
 	public boolean add(E e) {
-		// TODO implement this operation (part A)
-		throw new UnsupportedOperationException();
+		if(first == null) {
+			first = new Node<>(e);
+		} else {
+			Node<E> t = first;
+			while(t.next != null) {
+				t = t.next;
+			}
+			t.next = new Node<>(e);
+		}
+		size++;
+		return true;
 	}
 
 	@Override
 	public boolean contains(Object o) {
-		// TODO implement this operation (part B)
-		throw new UnsupportedOperationException();
+		if (o == null) {
+			throw new NullPointerException();
+		}
+
+		E e = (E) o;
+
+		Node<E> t = first;
+		while(t != null && !e.equals(t.elem)) {
+			t = t.next;
+		}
+		return t != null;
 	}
 
 	@Override
 	public boolean remove(Object o) {
-		// TODO implement this operation (part C)
-		throw new UnsupportedOperationException();
+		if (o == null) {
+			throw new NullPointerException();
+		}
+
+		E e = (E) o;
+
+		if(first != null && e.equals(first.elem)) {
+			first = first.next;
+			size--;
+			return true;
+		} else if (first != null){
+			Node<E> t = first;
+			while (t.next != null && !e.equals(t.next.elem)) {
+				t = t.next;
+			}
+			if (t.next != null && e.equals(t.next.elem)) {
+				t.next = t.next.next;
+				size--;
+				return true;
+			}
+			return false;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public E get(int index) {
-		// TODO implement this operation (part D)
-		throw new UnsupportedOperationException();
+		if(index >= size || index < 0) {
+			throw new IndexOutOfBoundsException();
+		}
+
+		Node<E> t = first;
+		while (index-- > 0) {
+			t = t.next;
+		}
+		return t.elem;
 	}
 
 	@Override
 	public void add(int index, E element) {
-		// TODO implement this operation (part D)
-		throw new UnsupportedOperationException();
+		if(index > size || index < 0) {
+			throw new IndexOutOfBoundsException();
+		}
+
+		if(index == 0) {
+			first = new Node<>(element, first);
+		} else {
+			Node<E> t = first;
+			while(--index > 0) {
+				t = t.next;
+			}
+			t.next = new Node<>(element, t.next);
+		}
+		size++;
 	}
 
 	@Override
 	public E remove(int index) {
-		// TODO implement this operation (part D)
-		throw new UnsupportedOperationException();
+		if(index >= size || index < 0) {
+			throw new IndexOutOfBoundsException();
+		}
+
+		if(index == 0) {
+			E e = first.elem;
+			first = first.next;
+			size--;
+			return e;
+		} else {
+			Node<E> t = first;
+			while (--index > 0) {
+				t = t.next;
+			}
+
+			E e = t.next.elem;
+			t.next = t.next.next;
+			size--;
+			return e;
+		}
 	}
 
 	@Override
