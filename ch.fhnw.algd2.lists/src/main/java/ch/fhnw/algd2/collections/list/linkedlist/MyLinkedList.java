@@ -25,10 +25,6 @@ public class MyLinkedList<E> extends MyAbstractList<E> {
 
     @Override
     public boolean contains(Object o) {
-        if (o == null) {
-            throw new NullPointerException();
-        }
-
         E e = (E) o;
 
         Node<E> t = first;
