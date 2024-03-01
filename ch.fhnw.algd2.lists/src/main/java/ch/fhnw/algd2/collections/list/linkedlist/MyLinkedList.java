@@ -3,160 +3,173 @@ package ch.fhnw.algd2.collections.list.linkedlist;
 import java.util.Arrays;
 
 import ch.fhnw.algd2.collections.list.MyAbstractList;
+import java.util.Objects;
 
 public class MyLinkedList<E> extends MyAbstractList<E> {
-	private int size = 0;
-	private Node<E> first;
 
-	@Override
-	public boolean add(E e) {
-		if(first == null) {
-			first = new Node<>(e);
-		} else {
-			Node<E> t = first;
-			while(t.next != null) {
-				t = t.next;
-			}
-			t.next = new Node<>(e);
-		}
-		size++;
-		return true;
-	}
+    private int size = 0;
+    private Node<E> first, last;
 
-	@Override
-	public boolean contains(Object o) {
-		if (o == null) {
-			throw new NullPointerException();
-		}
+    @Override
+    public boolean add(E e) {
+        if (last == null) {
+            first = new Node<>(e);
+            last = first;
+        } else {
+            last.next = new Node<>(e);
+            last = last.next;
+        }
+        size++;
+        return true;
+    }
 
-		E e = (E) o;
+    @Override
+    public boolean contains(Object o) {
+        if (o == null) {
+            throw new NullPointerException();
+        }
 
-		Node<E> t = first;
-		while(t != null && !e.equals(t.elem)) {
-			t = t.next;
-		}
-		return t != null;
-	}
+        E e = (E) o;
 
-	@Override
-	public boolean remove(Object o) {
-		if (o == null) {
-			throw new NullPointerException();
-		}
+        Node<E> t = first;
+        while (t != null && !Objects.equals(e, t.elem)) {
+            t = t.next;
+        }
+        return t != null;
+    }
 
-		E e = (E) o;
+    @Override
+    public boolean remove(Object o) {
+        E e = (E) o;
 
-		if(first != null && e.equals(first.elem)) {
-			first = first.next;
-			size--;
-			return true;
-		} else if (first != null){
-			Node<E> t = first;
-			while (t.next != null && !e.equals(t.next.elem)) {
-				t = t.next;
-			}
-			if (t.next != null && e.equals(t.next.elem)) {
-				t.next = t.next.next;
-				size--;
-				return true;
-			}
-			return false;
-		} else {
-			return false;
-		}
-	}
+        if (first == null) {
+            return false;
+        }
 
-	@Override
-	public E get(int index) {
-		if(index >= size || index < 0) {
-			throw new IndexOutOfBoundsException();
-		}
+        Node<E> t = new Node<>(null, first);
+        while (t.next != null && !Objects.equals(e, t.next.elem)) {
+            t = t.next;
+        }
 
-		Node<E> t = first;
-		while (index-- > 0) {
-			t = t.next;
-		}
-		return t.elem;
-	}
+        if (t.next == first && t.next == last) {
+            first = null;
+            last = null;
+        } else if (t.next == first) {
+            first = first.next;
+        } else if (t.next == last) {
+            last = t;
+        }
 
-	@Override
-	public void add(int index, E element) {
-		if(index > size || index < 0) {
-			throw new IndexOutOfBoundsException();
-		}
+        if (t.next != null && Objects.equals(e, t.next.elem)) {
+            t.next = t.next.next;
+            size--;
+            return true;
+        }
+        return false;
+    }
 
-		if(index == 0) {
-			first = new Node<>(element, first);
-		} else {
-			Node<E> t = first;
-			while(--index > 0) {
-				t = t.next;
-			}
-			t.next = new Node<>(element, t.next);
-		}
-		size++;
-	}
+    @Override
+    public E get(int index) {
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
 
-	@Override
-	public E remove(int index) {
-		if(index >= size || index < 0) {
-			throw new IndexOutOfBoundsException();
-		}
+        Node<E> t = first;
+        while (index-- > 0) {
+            t = t.next;
+        }
+        return t.elem;
+    }
 
-		if(index == 0) {
-			E e = first.elem;
-			first = first.next;
-			size--;
-			return e;
-		} else {
-			Node<E> t = first;
-			while (--index > 0) {
-				t = t.next;
-			}
+    @Override
+    public void add(int index, E element) {
+        if (index > size || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
 
-			E e = t.next.elem;
-			t.next = t.next.next;
-			size--;
-			return e;
-		}
-	}
+        if (index == 0) {
+            first = new Node<>(element, first);
+            last = first;
+        } else if (index == size) {
+            last.next = new Node<>(element);
+            last = last.next;
+        } else {
+            Node<E> t = first;
+            while (--index > 0) {
+                t = t.next;
+            }
+            t.next = new Node<>(element, t.next);
+        }
+        size++;
+    }
 
-	@Override
-	public Object[] toArray() {
-		Object[] array = new Object[size];
-		int index = 0;
-		Node<E> current = first;
-		while (current != null) {
-			array[index++] = current.elem;
-			current = current.next;
-		}
-		return array;
-	}
+    @Override
+    public E remove(int index) {
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
 
-	@Override
-	public int size() {
-		return size;
-	}
+        if (index == 0) {
+            E e = first.elem;
+            if (first == last) {
+                last = null;
+            }
+            first = first.next;
+            size--;
+            return e;
+        } else {
+            Node<E> t = first;
+            while (--index > 0) {
+                t = t.next;
+            }
 
-	private static class Node<E> {
-		private final E elem;
-		private Node<E> next;
+            E e = t.next.elem;
+            if (t.next == last) {
+                last = t;
+            }
+            t.next = t.next.next;
+            size--;
+            return e;
+        }
+    }
 
-		private Node(E elem) {
-			this.elem = elem;
-		}
+    @Override
+    public Object[] toArray() {
+        Object[] array = new Object[size];
+        int index = 0;
+        Node<E> current = first;
+        while (current != null) {
+            array[index++] = current.elem;
+            current = current.next;
+        }
+        return array;
+    }
 
-		private Node(E elem, Node<E> next) {
-			this.elem = elem;
-			this.next = next;
-		}
-	}
+    @Override
+    public int size() {
+        return size;
+    }
 
-	public static void main(String[] args) {
-		MyLinkedList<Integer> list = new MyLinkedList<>();
-		list.add(1);
-		list.add(2);
-		list.add(3);
-		System.out.println(Arrays.toString(list.toArray()));
-	}
+    private static class Node<E> {
+
+        private final E elem;
+        private Node<E> next;
+
+        private Node(E elem) {
+            this.elem = elem;
+        }
+
+        private Node(E elem, Node<E> next) {
+            this.elem = elem;
+            this.next = next;
+        }
+    }
+
+    public static void main(String[] args) {
+        MyLinkedList<Integer> list = new MyLinkedList<>();
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        System.out.println(Arrays.toString(list.toArray()));
+    }
 }
