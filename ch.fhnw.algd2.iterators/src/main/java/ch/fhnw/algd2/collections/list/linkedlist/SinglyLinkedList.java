@@ -1,44 +1,139 @@
 package ch.fhnw.algd2.collections.list.linkedlist;
 
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 import ch.fhnw.algd2.collections.list.MyAbstractList;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class SinglyLinkedList<E> extends MyAbstractList<E> {
-	// variable int modCount already declared by AbstractList<E>
+
 	private int size = 0;
-	private int modCount = 0;
-	private Node<E> first;
+	private Node<E> first, last;
 
 	@Override
 	public boolean add(E e) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void add(int index, E element) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean remove(Object o) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public E remove(int index) {
-		throw new UnsupportedOperationException();
+		if (last == null) {
+			first = new Node<>(e);
+			last = first;
+		} else {
+			last.next = new Node<>(e);
+			last = last.next;
+		}
+		size++;
+		modCount++;
+		return true;
 	}
 
 	@Override
 	public boolean contains(Object o) {
-		throw new UnsupportedOperationException();
+		E e = (E) o;
+
+		Node<E> t = first;
+		while (t != null && !Objects.equals(e, t.elem)) {
+			t = t.next;
+		}
+		return t != null;
+	}
+
+	@Override
+	public boolean remove(Object o) {
+		E e = (E) o;
+
+		if (first == null) {
+			return false;
+		}
+
+		Node<E> t = new Node<>(null, first);
+		while (t.next != null && !Objects.equals(e, t.next.elem)) {
+			t = t.next;
+		}
+
+		if (t.next == first && t.next == last) {
+			first = null;
+			last = null;
+		} else if (t.next == first) {
+			first = first.next;
+		} else if (t.next == last) {
+			last = t;
+		}
+
+		if (t.next != null && Objects.equals(e, t.next.elem)) {
+			t.next = t.next.next;
+			size--;
+			modCount++;
+			return true;
+		}
+		return false;
 	}
 
 	@Override
 	public E get(int index) {
-		throw new UnsupportedOperationException();
+		if (index >= size || index < 0) {
+			throw new IndexOutOfBoundsException();
+		}
+
+		Node<E> t = first;
+		while (index-- > 0) {
+			t = t.next;
+		}
+		return t.elem;
+	}
+
+	@Override
+	public void add(int index, E element) {
+		if (index > size || index < 0) {
+			throw new IndexOutOfBoundsException();
+		}
+
+		modCount++;
+		if (index == 0) {
+			first = new Node<>(element, first);
+			last = first;
+		} else if (index == size) {
+			last.next = new Node<>(element);
+			last = last.next;
+		} else {
+			Node<E> t = first;
+			while (--index > 0) {
+				t = t.next;
+			}
+			t.next = new Node<>(element, t.next);
+		}
+		size++;
+	}
+
+	@Override
+	public E remove(int index) {
+		if (index >= size || index < 0) {
+			throw new IndexOutOfBoundsException();
+		}
+
+		modCount++;
+		if (index == 0) {
+			E e = first.elem;
+			if (first == last) {
+				last = null;
+			}
+			first = first.next;
+			size--;
+			return e;
+		} else {
+			Node<E> t = first;
+			while (--index > 0) {
+				t = t.next;
+			}
+
+			E e = t.next.elem;
+			if (t.next == last) {
+				last = t;
+			}
+			t.next = t.next.next;
+			size--;
+			return e;
+		}
 	}
 
 	@Override
@@ -79,21 +174,41 @@ public class SinglyLinkedList<E> extends MyAbstractList<E> {
 
 	private class MyIterator implements Iterator<E> {
 		private Node<E> next = first;
+		private Node<E> current = null;
+		private int currentIndex = -1;
 		private int itModCount = modCount;
 
 		@Override
 		public boolean hasNext() {
-			throw new UnsupportedOperationException();
+			return next != null;
 		}
 
 		@Override
 		public E next() {
-			throw new UnsupportedOperationException();
+			if(!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			if(itModCount != modCount) {
+				throw new ConcurrentModificationException();
+			}
+			current = next;
+			currentIndex++;
+			next = next.next;
+			return current.elem;
 		}
 
 		@Override
 		public void remove() {
-			throw new UnsupportedOperationException();
+			if(itModCount != modCount) {
+				throw new ConcurrentModificationException();
+			}
+			if(current == null) {
+				throw new IllegalStateException();
+			}
+			SinglyLinkedList.this.remove(currentIndex);
+			itModCount++;
+			current = null;
+			currentIndex--;
 		}
 	}
 
