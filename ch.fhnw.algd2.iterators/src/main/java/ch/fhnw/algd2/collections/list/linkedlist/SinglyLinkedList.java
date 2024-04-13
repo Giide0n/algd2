@@ -174,7 +174,7 @@ public class SinglyLinkedList<E> extends MyAbstractList<E> {
 
 	private class MyIterator implements Iterator<E> {
 		private Node<E> next = first;
-		private Node<E> current = null;
+		private Node<E> previous = null;
 		private int currentIndex = -1;
 		private int itModCount = modCount;
 
@@ -191,10 +191,10 @@ public class SinglyLinkedList<E> extends MyAbstractList<E> {
 			if(itModCount != modCount) {
 				throw new ConcurrentModificationException();
 			}
-			current = next;
+			previous = next;
 			currentIndex++;
 			next = next.next;
-			return current.elem;
+			return previous.elem;
 		}
 
 		@Override
@@ -202,12 +202,12 @@ public class SinglyLinkedList<E> extends MyAbstractList<E> {
 			if(itModCount != modCount) {
 				throw new ConcurrentModificationException();
 			}
-			if(current == null) {
+			if(previous == null) {
 				throw new IllegalStateException();
 			}
 			SinglyLinkedList.this.remove(currentIndex);
 			itModCount++;
-			current = null;
+			previous = null;
 			currentIndex--;
 		}
 	}
