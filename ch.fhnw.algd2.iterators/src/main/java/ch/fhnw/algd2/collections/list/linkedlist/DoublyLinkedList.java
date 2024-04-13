@@ -48,10 +48,6 @@ public class DoublyLinkedList<E> extends MyAbstractList<E> {
             add(element);
             modCount--;
             size--;
-//		} else if (index == 0) {
-//			Node<E> n = new Node<>(base, element, base.next);
-//			base.next.prev = n;
-//			base.next = n;
         } else {
             Node<E> t = first;
             while (index-- > 0) {
