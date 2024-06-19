@@ -1,0 +1,29 @@
+plugins {
+	id 'java'
+	id 'application'
+	id 'idea'
+}
+
+application {
+	mainClass = "Application"
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	implementation files {'lib/ch.fhnw.algd.sortdemo.algorithms.algd.jar'}
+	implementation files {'lib/ch.fhnw.algd.sortdemo.awt.numericalview.jar'}
+	implementation files {'lib/ch.fhnw.algd.sortdemo.awt.simpleview.jar'}
+	implementation files {'lib/ch.fhnw.algd.sortdemo.awt.window.jar'}
+	implementation files {'lib/ch.fhnw.algd.sortdemo.framework.jar'}
+	implementation files {'lib/ch.fhnw.algd.sortdemo.viewPicker.jar'}
+}
