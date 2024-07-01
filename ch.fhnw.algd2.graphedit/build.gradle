@@ -1,0 +1,20 @@
+plugins {
+	id 'java'
+	id 'application'
+	id 'eclipse'
+	id 'idea'
+}
+
+wrapper.gradleVersion = '8.6'
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
+application {
+	mainClass = 'ch.fhnw.algd2.graphedit.GraphEditor'
+}
